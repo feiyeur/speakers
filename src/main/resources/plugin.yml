@@ -1,0 +1,17 @@
+name: Speakers
+version: "0.1"
+main: me.feiyeur.speakers.SpeakersPlugin
+api-version: "1.21"
+description: Literally speakers
+
+permissions:
+  speakers.modify:
+    description: "Be a sound guy"
+    default: op
+
+commands:
+  speakers:
+    description: "Command for controlling speaker groups"
+    usage: "/speakers <create | add | play | stop | ls | delete>"
+    permission: speakers.modify
+    permission-message: "You're not a sound guy :skull:"
