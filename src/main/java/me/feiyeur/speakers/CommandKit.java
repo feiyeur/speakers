@@ -199,7 +199,6 @@ public class CommandKit implements TabExecutor {
 
     group.add(p.getLocation());
     if (group.getPlaying()) {
-      group.stop();
       group.playAll(plugin, group.sound);
     }
     plugin.config.saveConfig();
