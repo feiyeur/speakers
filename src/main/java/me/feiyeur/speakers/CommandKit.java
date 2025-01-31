@@ -22,9 +22,11 @@ public class CommandKit implements TabExecutor {
     public String name;
 
     private Sound sound = null;
+
     public boolean getPlaying() {
       return sound != null;
     }
+
     public String getSoundName() {
       if (sound == null) return null;
       return sound.name();
@@ -65,6 +67,7 @@ public class CommandKit implements TabExecutor {
     public void play(Player p, Sound sound) {
       this.sound = sound;
       for (Location loc : speakers) {
+        if (loc.getWorld() == null) continue;
         if (loc.getWorld().getUID() != p.getWorld().getUID()) continue;
         p.playSound(loc, sound, 1.0f, 1.0f);
       }
@@ -73,13 +76,14 @@ public class CommandKit implements TabExecutor {
     // play, to a specific player, using existing sound var
     public void play(Player p) {
       for (Location loc : speakers) {
+        if (loc.getWorld() == null) continue;
         if (loc.getWorld().getUID() != p.getWorld().getUID()) continue;
         p.playSound(loc, sound, 1.0f, 1.0f);
       }
     }
 
     public void stop() {
-      if(!getPlaying()) return;
+      if (!getPlaying()) return;
       for (Player p : Bukkit.getOnlinePlayers()) {
         p.stopSound(this.sound);
       }
@@ -182,7 +186,7 @@ public class CommandKit implements TabExecutor {
     }
     plugin.speakerGroups.add(new SpeakerGroup(name));
     plugin.config.saveConfig();
-    sender.sendMessage("Group '"+name+"' created");
+    sender.sendMessage("Group '" + name + "' created");
   }
 
   private void addSpeaker(CommandSender sender, String name) {
@@ -222,11 +226,15 @@ public class CommandKit implements TabExecutor {
       return;
     }
 
-    StringBuilder msg = new StringBuilder("Speaker locations of the group '"+g.name+"':");
+    StringBuilder msg = new StringBuilder("Speaker locations of the group '" + g.name + "':");
     for (Location speakers : g.speakers) {
-      msg.append("\n- [")
-          .append(Objects.requireNonNull(speakers.getWorld()).getName())
-          .append("]")
+      msg.append("\n- [");
+      if (speakers.getWorld() == null) {
+        msg.append("world not found");
+      } else {
+        msg.append(speakers.getWorld().getName());
+      }
+      msg.append("]")
           .append(speakers.getX())
           .append(", ")
           .append(speakers.getY())
@@ -239,7 +247,7 @@ public class CommandKit implements TabExecutor {
 
   private void playGroup(CommandSender sender, String name, Sound sound) {
     if (name.equalsIgnoreCase("*")) {
-      sender.sendMessage("Playing every group w sound '" + sound.name()+"'");
+      sender.sendMessage("Playing every group w sound '" + sound.name() + "'");
       for (SpeakerGroup g : plugin.speakerGroups) {
         g.playAll(plugin, sound);
       }
@@ -289,7 +297,7 @@ public class CommandKit implements TabExecutor {
     g.stop();
     plugin.speakerGroups.remove(g);
     plugin.config.saveConfig();
-    sender.sendMessage("Group '"+name+"' deleted");
+    sender.sendMessage("Group '" + name + "' deleted");
   }
 
   private SpeakerGroup findGroupByName(String groupName) {
